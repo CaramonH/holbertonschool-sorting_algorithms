@@ -1,64 +1,38 @@
 #include "sort.h"
 
 /**
- * insertion_sort_list - sort DLL in ascending order using insertion
+ * insertion_sort_list - sort doubly linked list insertion style
  * @list: list to sort
+ * Return: void
  */
 void insertion_sort_list(listint_t **list)
 {
-	int i, len = 0;
-	listint_t *temp, *curr;
+	listint_t *node = NULL, *tmp = NULL;
 
-	if (!list)
+	if (list == NULL || *list == NULL || (*list)->next == NULL)
 		return;
 
-	curr = *list;
-	while (curr)
+	node = *list;
+	node = node->next;
+	while (node)
 	{
-		len++;
-		curr = curr->next;
-	}
-	curr = (*list)->next;
-
-	if (len < 2)
-		return;
-
-	for (i = 0; i < len - 1; i++)
-	{
-		temp = curr->next;
-		while (curr->prev && curr->n < curr->prev->n)
+		while (node->prev && node->n < (node->prev)->n)
 		{
-			list_swap(list, curr);
+			tmp = node;
+			if (node->next)
+				(node->next)->prev = tmp->prev;
+			(node->prev)->next = tmp->next;
+			node = node->prev;
+			tmp->prev = node->prev;
+			tmp->next = node;
+			if (node->prev)
+				(node->prev)->next = tmp;
+			node->prev = tmp;
+			if (tmp->prev == NULL)
+				*list = tmp;
 			print_list(*list);
+			node = node->prev;
 		}
-		curr = temp;
+		node = node->next;
 	}
-}
-
-/**
- * list_swap - swaps two doubly-linked list nodes
- * @list: list to swap
- * @curr: node to swap with previous node
- */
-void list_swap(listint_t **list, listint_t *curr)
-{
-	listint_t *prevNode = curr->prev;
-
-	curr->prev = NULL;
-	if (prevNode->prev)
-		curr->prev = prevNode->prev;
-
-	if (curr->next)
-		curr->next->prev = prevNode;
-
-	prevNode->next = curr->next;
-
-	curr->next = prevNode;
-
-	if (!prevNode->prev)
-		*list = curr;
-	if (prevNode->prev)
-		prevNode->prev->next = curr;
-
-	prevNode->prev = curr;
 }
